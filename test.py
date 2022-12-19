@@ -3,22 +3,6 @@
 #
 # Created: 12月, 19, 2022 17:30:35
 
-class Money:
-  def __init__(self,JPY,USD,lev):
-    self.JPY = JPY
-    self.USD = USD
-    self.MP_max = JPY
-    self.MP_min = JPY
-    self.lev = lev 
-  
-  def get_MP(self,rate):
-    return 
-  
-  def max_min(self,rate):
-    self.MP_max = max(self.MP_max,self.get_MP(rate))
-    self.MP_min = mix(self.MP_min,self.get_MP(rate))
-
-
 def main():
   import pandas_datareader.data as pdr
   import datetime
