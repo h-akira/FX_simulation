@@ -57,7 +57,7 @@ def main():
         standard = row.DEXJPUS
       elif standard -1 > row.DEXJPUS and step:
       ## elif standard -0.8 > row.DEXJPUS:
-        if money.JPY < step_money[step]:
+        if money.JPY > step_money[step]:
           money.buy_USD(step_money[step],row.DEXJPUS)
           step += 1
           standard = row.DEXJPUS
@@ -73,7 +73,7 @@ def main():
     if not no_transaction:
       standard = row.DEXJPUS
       print(f"{index}:レート={row.DEXJPUS}, step={step}")
-  print('最終時価総額:',money.get_MP)
+  print('最終時価総額:',money.get_MP(row.DEXJPUS))
   print('最高時価総額', money.MP_max)
   print('最低時価総額', money.MP_min)
 
