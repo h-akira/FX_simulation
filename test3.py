@@ -4,35 +4,68 @@
 # Created: 12月, 19, 2022 17:30:35
 
 class Money:
-  def __init__(self,JPY,lev=10,commisoin=0):
-    self.JPY = JPY  # 保有する円
-    self.deposit = 0  # 保証金（円）
+  def __init__(self,cash,commisoin=0, max_lev=25):
+    self.cash = cash  # 現金
+    self.deposit = 0  # 預け入れ金=保証金（円）
+    self.JPY  # ドル購入資金
     self.USD = 0 # 取引しているドル
     self.MP_max = JPY  # 時価の最高値
     self.MP_min = JPY  # 時価の最安値
-    self.lev = lev  # レバレッジ　 
+    self.max_lev = max_lev  # 最大レバレッジ　 
   
+  def cash2deposit(self,yen):
+    if 0 < yen <= self.cash:
+      self.cash -= yen
+      self.deposit += yen
+    else:
+      raise ValueError
+
+  def deposit2cash(self,yen,rate):
+    if yen>0:
+      if (self.deposit - yen) * self.max_lev > self.JPY
+        self.deposit -= yen
+        self.cash += yen
+      else:
+        print('必要な保証金額は残す必要があります.')
+    else:
+      raise ValueError
+
   def get_MP(self,rate):  # Market Price
-    return self.JPY + self.deposit + self.USD*rate - self.deposit*self.lev 
-  
+    return self.cash + self.deposit + self.USD*rate - self.JPY
+
   def max_min(self,rate):
     self.MP_max = max(self.MP_max,self.get_MP(rate))
     self.MP_min = min(self.MP_min,self.get_MP(rate))
 
   def buy_USD(self,yen,rate):
-    self.JPY -= yen
-    self.deposit += yen
-    self.USD += yen*self.lev/rate
-  
+    if yen>0:
+      if yen + self.JPY < self.deposit * self.max_lev:
+        self.JPY += yen
+        self.USD += yen/rate
+      else:
+        print("保証金が不足しています.")
+    else:
+      raise ValueError
+
   def sell_USD(self,dollar,rate):
-    ## if self.deposit*(dollar/self.USD)*self.lev < dollar*rate:
-    self.JPY += self.deposit*(dollar/self.USD) + dollar*rate - self.deposit*(dollar/self.USD)*self.lev
-    self.deposit -= self.deposit*(dollar/self.USD) + dollar*rate - self.deposit*(dollar/self.USD)*self.lev
-    self.USD -= dollar
-    if self.deposit < 0:
-      self.JPY += self.deposit
-      self.deposit = 0
-      print("保証金が不足しました．")
+    if 0 < dollar <= self.USD:
+      self.JPY -= dollar*rate
+      self.USD -= dollar
+    else:
+      raise ValueError
+
+  def profit2deposit(self,rate):
+    deposit += self.USD*rate-self.JPY
+    self.USD = self.JPY/rate
+    if deposit < 0:
+      print("保証金が不足したいるため追加します.")
+      try:
+        self.cash2deposit(abs(deposit))
+        deposit = 0
+      except ValueError:
+        print("破産しました.")
+        sys.exit()
+
 
   def debug(self,rate):
     print(f"""\
@@ -44,7 +77,18 @@ deposit         {self.deposit}
 Market price    {self.get_MP(rate)}
 ==================================""")
 
-
+class Exponentiation_strategy:
+  def __init__(self,first,max_step):
+    self.first = first
+    self.max_step = max_step:
+    self.step = 0 
+  def next_step(self,money,rate):
+    step += 1
+    return first * 2**(i-1)
+  def first_step(self,money,rate):
+    step = 0
+    step += 1
+    return first * 2**(i-1)
 
 def main():
   import pandas_datareader.data as pdr
@@ -55,8 +99,7 @@ def main():
   JPY_USD = pdr.DataReader('DEXJPUS', 'fred', start, end)
   JPY_USD = JPY_USD.dropna(how='any')
 
-  money = Money(JPY=1000000,lev=1)
-  ## money.debug(row.DEXJPUS)
+  money = Money(cash=1000000)
   step = 0
   step_money = numpy.array([10000,20000,40000,80000,160000,320000,640000,1280000,2560000])
   dev = 0
